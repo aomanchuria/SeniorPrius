@@ -28,7 +28,7 @@ import csv
 this line may work to connect the blutooth... I have not tested. I bind it directly on linux:
 #os.system("sudo rfcomm connect hci0 AA:BB:CC:11:22:33 1 &")	# connect using OBD2 unit's mac address. rfcomm locks, so detach(using "&")
 
-I am also using Balena Wifi-connect to create a hot spot from the rpi Zero.
+I am also using Balena Wifi-connect: https://github.com/balena-os/wifi-connect to create a hot spot from the rpi Zero.
 Basic operation:
 1) plug rpi zero near your router and wait at least 2 to 5 minutes for a wifi spot to be created...annoying!
 2) connect to this hotspot using your phone.
