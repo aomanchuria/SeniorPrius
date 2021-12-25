@@ -2,7 +2,8 @@
 """
 Created on Sun Nov 28 09:00:54 2021
 
-@author: amedina
+@author: imjprojts
+This file creates a log.csv in the same folder that contains data from the OBD port
 """
 #import bluetooth
 import obd
