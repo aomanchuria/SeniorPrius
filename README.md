@@ -35,6 +35,22 @@ this line may work to connect the blutooth... I have not tested. I bind it direc
 ```python
 os.system("sudo rfcomm connect hci0 AA:BB:CC:11:22:33 1 &")	# connect using OBD2 unit's mac address. rfcomm locks, so detach(using "&")
 ```
+instead I bind the bluetooth directly from linux:
+https://forums.raspberrypi.com/viewtopic.php?t=125922
+
+```
+sudo rfcomm bind hci0 XX:XX:XX:XX:XX:XX 1
+Now /dev/rfcomm0 is created and just waits there for our python script to use
+```
+```python
+#either like this for a single command connection
+connection = obd.OBD() # auto-connects to USB or RF port
+#like this for an automatically updating connection with defining actually what device to use, baud rate etc (this did not work for me)
+connection = obd.Async(portstr=("/dev/rfcomm0"), baudrate=(38400), protocol=(6)) # create an asynchronous connection
+#or like this for automated updates with automated connection
+connection = obd.Async()
+```
+
 
 I am also using Balena Wifi-connect: https://github.com/balena-os/wifi-connect to create a hot spot from the rpi Zero.
 Basic operation:
