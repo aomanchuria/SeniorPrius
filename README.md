@@ -2,11 +2,15 @@
 A script to log prius data from OBD port. Tested using a Bluetooth dongle in a Prius C 2014. Notice that this prius only has 10 modules. So you will have to develop something for the larger prii. But this can help you tremendously.
 
 To run the script simply run this on the commandline:
+
+```bash
 python3 SeniorPrius_V0001.py
+```
 
 this will run for as many seconds as you want:
+```python
 time.sleep(60) # change 60 to whatever number of seconds you want, but watch out! it will literally run for that long regardless of failure
-
+```
 if it works you will see your OBD LEDS light up
 
 I'm using a "Bafx Products - Wireless Bluetooth OBD2 Scanner & Code Reader" but if you used Dr. Prius on your phone with another reader, that should work
@@ -16,6 +20,7 @@ This script imports and uses:
 https://python-obd.readthedocs.io/en/latest/
 
 Here is a list of imports that may be of interest
+```python
 import obd
 from obd import OBDCommand, Unit
 from obd.protocols import ECU
@@ -24,6 +29,7 @@ import time
 import sys
 import logging
 import csv
+```
 
 this line may work to connect the blutooth... I have not tested. I bind it directly on linux:
 #os.system("sudo rfcomm connect hci0 AA:BB:CC:11:22:33 1 &")	# connect using OBD2 unit's mac address. rfcomm locks, so detach(using "&")
