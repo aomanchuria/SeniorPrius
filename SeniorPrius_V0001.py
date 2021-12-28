@@ -24,7 +24,13 @@ arr=[]
 csvfile = open('log.csv', 'a', newline='')
 writcsv = csv.writer(csvfile, delimiter=',',
                         quotechar='|', quoting=csv.QUOTE_MINIMAL)
-writcsv.writerow(['RPM', 'B+', 'm1v', 'm2v', 'm3v', 'm4v', 'm5v', 'm6v', 'm7v', 'm8v', 'm9v', 'm10v' ])
+writcsv.writerow(['RPM', 
+                  'B+', 'B2+', 
+                  'm1v', 'm2v', 'm3v', 'm4v', 'm5v', 'm6v', 'm7v', 'm8v', 'm9v', 'm10v',
+                  'm1r', 'm2r', 'm3r', 'm4r', 'm5r', 'm6r', 'm7r', 'm8r', 'm9r', 'm10r',
+                  'bt1', 'bt2', 'bt3','bt4',
+                  'eng2Load', 'eng2Map', 'eng2Iat', 'eng2At', 'eng2Ap', 'eng2cTmp', 'eng2rpm', 'eng2vsp', 'eng2ert', 'eng2tp', 'eng2ap1', 'eng2ap2', 'eng2dtcw', 'eng2dtcd', 'eng2dtct', 'eng2bp', 'eng2soc'])
+
 
 #os.system('sudo rfcomm connect hci0 00:1D:A5:20:17:AD 1')
 #os.system("sudo sdptool add SP")				# set up serial port using linux's sdptool
@@ -32,6 +38,7 @@ writcsv.writerow(['RPM', 'B+', 'm1v', 'm2v', 'm3v', 'm4v', 'm5v', 'm6v', 'm7v', 
 #os.system("sudo rfcomm connect hci0 AA:BB:CC:11:22:33 1 &")	# connect using OBD2 unit's mac address. rfcomm locks, so detach(using "&")
 #time.sleep(5)	
 
+#Prius C 2014 reports these, but sending direct connect commad did not work with these values
 #PORT=/dev/rfcomm0
 #BAUD = 38400
 #PROTOCOL = 6
@@ -47,15 +54,16 @@ writcsv.writerow(['RPM', 'B+', 'm1v', 'm2v', 'm3v', 'm4v', 'm5v', 'm6v', 'm7v', 
 
 #log = open("output.txt", "a")  # append mode
 
-def rpm(messages):
-    """ decoder for RPM messages """
+def eng1(messages):
+    """ decoder for various Engine messages """
     global arr
-    rp = messages[0].data
-    print(rp)
-    rpm = ((rp[11]*256+rp[12])/4) 
+    msg = messages[0].data
+    print(msg)
+    rpm = ((msg[11]*256+msg[12])/4) 
     arr.append(rpm)
     print (f'Engine RPM{rpm}')
     return rpm # construct a Pint Quantity
+
 def bvolt(messages):
     """ decoder for 12v battery voltage messages """
     global arr
@@ -65,6 +73,7 @@ def bvolt(messages):
     arr.append(voltage)
     print (f'12v Battery voltage{voltage}')
     return voltage # construct a Pint Quantity
+
 def b2volt(messages):
     """ decoder for 12v battery voltage messages """
     global arr
@@ -74,12 +83,12 @@ def b2volt(messages):
     arr.append(voltage)
     print (f'12v Battery voltage{voltage}')
     return voltage # construct a Pint Quantity
+
 def modvolt(messages):
     """ decoder for module voltage messages """
     global writcsv
     global arr
     modv = messages[0].data
-
     v1 = ((modv[2]*256+modv[3])/1000) 
     v2 = ((modv[4]*256+modv[5])/1000) 
     v3 = ((modv[6]*256+modv[7])/1000)  
@@ -100,9 +109,6 @@ def modvolt(messages):
     arr.append(v8)
     arr.append(v9)
     arr.append(v10)
-    writcsv.writerow(arr)
-    arr=[]
-
     print (f'Module 1 voltage{v1}')
     print (f'Module 2 voltage{v2}')
     print (f'Module 3 voltage{v3}')
@@ -113,15 +119,13 @@ def modvolt(messages):
     print (f'Module 8 voltage{v8}')
     print (f'Module 9 voltage{v9}')
     print (f'Module 10 voltage{v10}')
-
-    return v1, v2, v3, v4, v5, v6, v7, v8, v9, v10 # construct a Pint Quantity
+    return v1, v2, v3, v4, v5, v6, v7, v8, v9, v10 
 
 def modEsr(messages):
     """ decoder for module voltage messages """
     global writcsv
     global arr
     modr = messages[0].data
-
     c1 = (modr[2]/1000) 
     c2 = (modr[3]/1000) 
     c3 = (modr[4]/1000)  
@@ -142,9 +146,6 @@ def modEsr(messages):
     arr.append(c8)
     arr.append(c9)
     arr.append(c10)
-    writcsv.writerow(arr)
-    arr=[]
-
     print (f'Module 1 voltage{c1}')
     print (f'Module 2 voltage{c2}')
     print (f'Module 3 voltage{c3}')
@@ -155,16 +156,79 @@ def modEsr(messages):
     print (f'Module 8 voltage{c8}')
     print (f'Module 9 voltage{c9}')
     print (f'Module 10 voltage{c10}')
+    return c1, c2, c3, c4, c5, c6, c7, c8, c9, c10 
 
-    return c1, c2, c3, c4, c5, c6, c7, c8, c9, c10 # construct a Pint Quantity
+def modTmp(messages):
+    """ decoder for module temperature messages """
+    global writcsv
+    global arr
+    modv = messages[0].data
+
+    bt1 = ((modv[2]*256+modv[3])*255.9/65535-50)
+    bt2 = ((modv[4]*256+modv[5])*255.9/65535-50)
+    bt3 = ((modv[6]*256+modv[7])*255.9/65535-50) 
+    bt4 = ((modv[8]*256+modv[9])*255.9/65535-50)
+    arr.append(bt1)
+    arr.append(bt2)
+    arr.append(bt3)
+    arr.append(bt4)
+    print (f'Battery Intake Temp {bt1}')
+    print (f'Module 1 temp{bt2}')
+    print (f'Module 2 temp{bt3}')
+    print (f'Module 3 temp{bt4}')
+    return bt1, bt2, bt3, bt4
+
+def eng2(messages):
+    """ decoder for various Engine messages second set """
+    global arr
+    msg = messages[0].data
+    print(msg)
+    load = ((msg[2]*20)/51)
+    Map = msg[3]
+    Iat = msg[4]-40
+    At = msg[5]-40
+    Ap = msg[6]
+    cTmp = msg[7]-40
+    rpm = ((msg[8]*256+msg[9])/4) 
+    vsp = msg[10]
+    ert = msg[11]*256+msg[12]
+    tp = msg[13]*20/51
+    ap1 = msg[14]*20/51
+    ap2 = msg[15]*20/51
+    dtcw = msg[16]
+    dtcd = msg[17]*256+msg[17]
+    dtct = msg[18]*256+msg[19]
+    bp = ((msg[20]*256+msg[21])/1000)
+    soc = msg[22]*20/51
+    arr.append(load)
+    arr.append(Map)
+    arr.append(Iat)
+    arr.append(At)
+    arr.append(Ap)
+    arr.append(cTmp)
+    arr.append(rpm)
+    arr.append(vsp)
+    arr.append(ert)
+    arr.append(tp)
+    arr.append(ap1)
+    arr.append(ap2)
+    arr.append(dtcw)
+    arr.append(dtcd)
+    arr.append(dtct)
+    arr.append(bp)
+    arr.append(soc)
+    writcsv.writerow(arr) #write to CSV after all row data has been collected
+    arr=[] #clear CSV array to start next row
+    print (f'Engine calculated load {load}')
+    print (f'Engine RPM{rpm}')
+    return load,rpm # construct a Pint Quantity
 
 #cmd = obd.commands.RPM # select an OBD command (sensor)
-crpm = OBDCommand("RPM",         # name
-                 "Engine RPM",   # description
-                 #b"010C",        # command
+ceng1 = OBDCommand("ENG1",         # name
+                 "Engine Query set1",   # description
                  b"2101",        # command
                  27,              # number of return bytes
-                 rpm,            # decoding function
+                 eng1,            # decoding function
                  ECU.ENGINE,     # (optional) ECU filter
                  True)             # (optional) enable optimizations
 
@@ -189,7 +253,6 @@ cmv = OBDCommand("MV",         # name
                  b"2181",        # command
                  26,              # number of return bytes
                  modvolt,            # decoding function
-                 #ECU.ALL,     # (optional) ECU filter
                  True, # (optional) enable optimizations
                  700) #header       
 
@@ -198,15 +261,27 @@ cmesr = OBDCommand("MESR",         # name
                  b"2195",        # command
                  12,              # number of return bytes
                  modEsr,            # decoding function
-                 #ECU.ALL,     # (optional) ECU filter
                  True, # (optional) enable optimizations
-                 700) #header       
+                 700) #header    
+   
+cbtemp = OBDCommand("MTMP",         # name
+                 "battery temperatures",   # description
+                 b"2187",        # command
+                 10,              # number of return bytes
+                 modTmp,            # decoding function
+                 True, # (optional) enable optimizations
+                 700) #header 
 
+ceng2 = OBDCommand("ENG2",         # name
+                 "Engine Query set 2",   # description
+                 b"2101",        # command
+                 27,              # number of return bytes
+                 eng2,            # decoding function
+                 True,           # (optional) enable optimizations
+                 700)             
 
-#obd.supported_commands.add(cmv)  #remove the messave "WARNING:obd.obd:'b'2181': Module Voltages' is not supported"
-
-# will continuously print new RPM values
-def new_rpm(response):
+# will continuously print new values for each command requested
+def new_ENG1(response):
     #log.write(str(response.value))
     print("RPM", str(response.value))
 def new_BV(response):
@@ -221,26 +296,40 @@ def new_MV(response):
 def new_MESR(response):
     #log.write(str(response.value))
     print("Drive Bat ESRs", str(response.value))
+def new_MTMP(response):
+    #log.write(str(response.value))
+    print("Drive Bat Temps", str(response.value))
+def new_ENG2(response):
+    #log.write(str(response.value))
+    print("Engine Properties", str(response.value))
 
 #connection = obd.OBD() # auto-connects to USB or RF port
 #connection = obd.Async(portstr=("/dev/rfcomm0"), baudrate=(38400), protocol=(6)) # create an asynchronous connection
+#start connection
 connection = obd.Async()
-connection.supported_commands.add(crpm)
+
+#remove the unsupported messages, such as "WARNING:obd.obd:'b'2181': Module Voltages' is not supported"
+connection.supported_commands.add(ceng1)
 connection.supported_commands.add(cmv)
 connection.supported_commands.add(cbv)
 connection.supported_commands.add(cbv2)
 connection.supported_commands.add(cmesr)
-#response = connection.query(cmd) # send the command
+connection.supported_commands.add(cbtemp)
+connection.supported_commands.add(ceng2)
+#response = connection.query(cmd) # send single command
 #print(response) # "2410 RPM"
 
-# keep track of some PIDs
-connection.watch(crpm, callback=new_rpm)
+# list of PIDs to keep refreshing
+connection.watch(ceng1, callback=new_ENG1)
 connection.watch(cbv, callback=new_BV)
 connection.watch(cbv2, callback=new_B2V)
 connection.watch(cmv, callback=new_MV)
 connection.watch(cmesr, callback=new_MESR)
+connection.watch(cbtemp, callback=new_MTMP)
+connection.watch(ceng2, callback=new_ENG2)
+#start loop
 connection.start()
-time.sleep(60) # do other work in the main thread
+time.sleep(2000) # keep looping for this many seconds. Do other work in the main thread
 connection.stop()
 #sys.stdout.close()
 csvfile.close()
@@ -271,3 +360,4 @@ Unit type: C
 Equation: AC-40 (no space between A and C; "AC" is the location within the response)
 OBD Header: 7E0 (Auto also works, but seems to take longer)
 """
+
