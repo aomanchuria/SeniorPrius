@@ -322,7 +322,7 @@ connection.supported_commands.add(ceng2)
 # list of PIDs to keep refreshing
 connection.watch(ceng1, callback=new_ENG1)
 connection.watch(cbv, callback=new_BV)
-connection.watch(cbv2, callback=new_B2V)
+#connection.watch(cbv2, callback=new_B2V) The translation function does not seem to be working for this one at the moment
 connection.watch(cmv, callback=new_MV)
 connection.watch(cmesr, callback=new_MESR)
 connection.watch(cbtemp, callback=new_MTMP)
