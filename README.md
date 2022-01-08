@@ -2,10 +2,11 @@
 A script to log prius data from OBD port. Tested using a Bluetooth dongle in a Prius C 2014. Notice that this prius only has 10 modules. So you will have to develop something for the larger prii. But this can help you tremendously.
 
 First of all, here are the real heros behind this effort, on who's shoulders I am standing, without knowing anyone there:
-```HTML
+
 https://github.com/brendan-w/python-OBD
+
 https://github.com/Ircama/ELM327-emulator
-```
+
 Thanks guys and I hope your shoulders don't hurt. I'll add the GPL references when I release this. its an annoying thing like a reference for a 1000 word essay.
 
 To run the script simply run this on the commandline:
