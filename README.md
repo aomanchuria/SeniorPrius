@@ -73,3 +73,24 @@ https://www.amazon.com/gp/product/B003MTTJOY/ref=ppx_yo_dt_b_search_asin_title?i
 https://www.amazon.com/gp/product/B00QTE09SY/ref=ppx_yo_dt_b_search_asin_title?ie=UTF8&psc=1
 https://www.amazon.com/gp/product/B01G9W1SBW/ref=ppx_yo_dt_b_search_asin_title?ie=UTF8&psc=1
 https://www.amazon.com/gp/product/B01NBHYAR0/ref=ppx_yo_dt_b_search_asin_title?ie=UTF8&psc=1
+
+
+To test the software, instead of walking outside for every change in the 0 celcius weather, I'm using now the ELM emulator from: https://github.com/Ircama/ELM327-emulator.
+Create a COM# port pair like COM3 and COM4 using comOcom (extreemely easy to use), then run the emulator like this:
+python -m elm -s car  #this will pick one of the two ports, say COM3
+
+Then use YAT to connect to COM4 and do manual commands or use Senior Prius as shown below to see it run on your computer without a car... only works if the commands are listed for your specifi car (even non hybrids) of course, but this will help you get started I think.
+
+
+Using seniorPrius to connect to your car:
+```python
+connection = obd.Async()
+```
+Using SeniorPrius to connect to your COM# port
+
+```python
+PORT='\.\COM4'
+BAUD = '9600' #other faster bauds are OK I think
+PROTOCOL = '6'
+connection = obd.Async(portstr=(PORT),baudrate=(BAUD),protocol=(PROTOCOL), fast=True)
+```
