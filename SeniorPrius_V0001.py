@@ -10,6 +10,7 @@ import obd
 
 from obd import OBDCommand, Unit
 from obd.protocols import ECU
+from obd.protocols import ECU_HEADER
 from obd.utils import bytes_to_int
 import time
 import sys
@@ -54,8 +55,18 @@ writcsv.writerow(['RPM',
 
 #log = open("output.txt", "a")  # append mode
 
+#########
+#define headers found in Prius C
+ECU_HEADER.MY=b'7E2'
+ECU_HEADER.PCH7=b'7'
+ECU_HEADER.PCH700=b'700'
+ECU_HEADER.PCH7B0=b'7B0'
+ECU_HEADER.PCH7C0=b'7C0'
+ECU_HEADER.PCH7C4=b'7C4'
+#########
+
 def eng1(messages):
-    """ decoder for various Engine messages """
+    """Decode various Engine messages."""
     global arr
     msg = messages[0].data
     print(msg)
@@ -65,7 +76,7 @@ def eng1(messages):
     return rpm # construct a Pint Quantity
 
 def bvolt(messages):
-    """ decoder for 12v battery voltage messages """
+    """Decode 12v battery voltage messages."""
     global arr
     bv = messages[0].data
     print(bv)
@@ -75,7 +86,7 @@ def bvolt(messages):
     return voltage # construct a Pint Quantity
 
 def b2volt(messages):
-    """ decoder for 12v battery voltage messages """
+    """Decode 12v battery voltage messages."""
     global arr
     bv = messages[0].data
     print(bv)
@@ -85,8 +96,7 @@ def b2volt(messages):
     return voltage # construct a Pint Quantity
 
 def modvolt(messages):
-    """ decoder for module voltage messages """
-    global writcsv
+    """Decode module voltage messages."""
     global arr
     modv = messages[0].data
     v1 = ((modv[2]*256+modv[3])/1000) 
@@ -122,8 +132,7 @@ def modvolt(messages):
     return v1, v2, v3, v4, v5, v6, v7, v8, v9, v10 
 
 def modEsr(messages):
-    """ decoder for module voltage messages """
-    global writcsv
+    """Decode module internal resistance."""
     global arr
     modr = messages[0].data
     c1 = (modr[2]/1000) 
@@ -146,21 +155,20 @@ def modEsr(messages):
     arr.append(c8)
     arr.append(c9)
     arr.append(c10)
-    print (f'Module 1 voltage{c1}')
-    print (f'Module 2 voltage{c2}')
-    print (f'Module 3 voltage{c3}')
-    print (f'Module 4 voltage{c4}')
-    print (f'Module 5 voltage{c5}')
-    print (f'Module 6 voltage{c6}')
-    print (f'Module 7 voltage{c7}')
-    print (f'Module 8 voltage{c8}')
-    print (f'Module 9 voltage{c9}')
-    print (f'Module 10 voltage{c10}')
+    print (f'Module 1 resistance{c1}')
+    print (f'Module 2 resistance{c2}')
+    print (f'Module 3 resistance{c3}')
+    print (f'Module 4 resistance{c4}')
+    print (f'Module 5 resistance{c5}')
+    print (f'Module 6 resistance{c6}')
+    print (f'Module 7 resistance{c7}')
+    print (f'Module 8 resistance{c8}')
+    print (f'Module 9 resistance{c9}')
+    print (f'Module 10 resistance{c10}')
     return c1, c2, c3, c4, c5, c6, c7, c8, c9, c10 
 
 def modTmp(messages):
-    """ decoder for module temperature messages """
-    global writcsv
+    """Decode module temperature messages."""
     global arr
     modv = messages[0].data
 
@@ -176,30 +184,33 @@ def modTmp(messages):
     print (f'Module 1 temp{bt2}')
     print (f'Module 2 temp{bt3}')
     print (f'Module 3 temp{bt4}')
+    writcsv.writerow(arr) #write to CSV after all row data has been collected
+    arr=[] #clear CSV array to start next row
     return bt1, bt2, bt3, bt4
 
-def eng2(messages):
-    """ decoder for various Engine messages second set """
+def eng2(message):
+    """Decode various Engine messages second set."""
+    global writcsv
     global arr
-    msg = messages[0].data
-    print(msg)
-    load = ((msg[2]*20)/51)
-    Map = msg[3]
-    Iat = msg[4]-40
-    At = msg[5]-40
-    Ap = msg[6]
-    cTmp = msg[7]-40
-    rpm = ((msg[8]*256+msg[9])/4) 
-    vsp = msg[10]
-    ert = msg[11]*256+msg[12]
-    tp = msg[13]*20/51
-    ap1 = msg[14]*20/51
-    ap2 = msg[15]*20/51
-    dtcw = msg[16]
-    dtcd = msg[17]*256+msg[17]
-    dtct = msg[18]*256+msg[19]
-    bp = ((msg[20]*256+msg[21])/1000)
-    soc = msg[22]*20/51
+    msg2 = message[0].data
+    print(msg2)
+    load = ((msg2[2]*20)/51)
+    Map = msg2[3]
+    Iat = msg2[4]-40
+    At = msg2[5]-40
+    Ap = msg2[6]
+    cTmp = msg2[7]-40
+    rpm = ((msg2[8]*256+msg2[9])/4) 
+    vsp = msg2[10]
+    ert = msg2[11]*256+msg2[12]
+    tp = msg2[13]*20/51
+    ap1 = msg2[14]*20/51
+    ap2 = msg2[15]*20/51
+    dtcw = msg2[16]
+    dtcd = msg2[17]*256+msg2[17]
+    dtct = msg2[18]*256+msg2[19]
+    bp = ((msg2[20]*256+msg2[21])/1000)
+    soc = msg2[22]*20/51
     arr.append(load)
     arr.append(Map)
     arr.append(Iat)
@@ -221,7 +232,7 @@ def eng2(messages):
     arr=[] #clear CSV array to start next row
     print (f'Engine calculated load {load}')
     print (f'Engine RPM{rpm}')
-    return load,rpm # construct a Pint Quantity
+    return load # construct a Pint Quantity
 
 #cmd = obd.commands.RPM # select an OBD command (sensor)
 ceng1 = OBDCommand("ENG1",         # name
@@ -238,7 +249,8 @@ cbv = OBDCommand("BV",         # name
                  3,              # number of return bytes
                  bvolt,            # decoding function
                  ECU.ALL,     # (optional) ECU filter
-                 True)             # (optional) enable optimizations
+                 True,             # (optional) enable optimizations
+                 header=ECU_HEADER.PCH7)             
 
 cbv2 = OBDCommand("BV2",         # name
                  "12V Battery voltage",   # description
@@ -254,7 +266,7 @@ cmv = OBDCommand("MV",         # name
                  26,              # number of return bytes
                  modvolt,            # decoding function
                  True, # (optional) enable optimizations
-                 700) #header       
+                 header=ECU_HEADER.PCH700) #header       
 
 cmesr = OBDCommand("MESR",         # name
                  "Module Internal Resistance",   # description
@@ -262,7 +274,7 @@ cmesr = OBDCommand("MESR",         # name
                  12,              # number of return bytes
                  modEsr,            # decoding function
                  True, # (optional) enable optimizations
-                 700) #header    
+                 header=ECU_HEADER.PCH700) #header    
    
 cbtemp = OBDCommand("MTMP",         # name
                  "battery temperatures",   # description
@@ -270,43 +282,55 @@ cbtemp = OBDCommand("MTMP",         # name
                  10,              # number of return bytes
                  modTmp,            # decoding function
                  True, # (optional) enable optimizations
-                 700) #header 
+                 header=ECU_HEADER.PCH700) #header 
 
 ceng2 = OBDCommand("ENG2",         # name
                  "Engine Query set 2",   # description
-                 b"2101",        # command
-                 27,              # number of return bytes
+                 b"2103",        # command
+                 24,              # number of return bytes
                  eng2,            # decoding function
                  True,           # (optional) enable optimizations
-                 700)             
+                 header=ECU_HEADER.PCH7)             
 
 # will continuously print new values for each command requested
 def new_ENG1(response):
+    """Print responce."""
     #log.write(str(response.value))
     print("RPM", str(response.value))
 def new_BV(response):
+    """Print responce."""
     #log.write(str(response.value))
     print("12v Bat V", str(response.value))
 def new_B2V(response):
+    """Print responce."""
     #log.write(str(response.value))
     print("12v Bat V2", str(response.value))
 def new_MV(response):
+    """Print responce."""
     #log.write(str(response.value))
     print("Drive Bat Vs", str(response.value))
 def new_MESR(response):
+    """Print responce."""
     #log.write(str(response.value))
     print("Drive Bat ESRs", str(response.value))
 def new_MTMP(response):
+    """Print responce."""
     #log.write(str(response.value))
     print("Drive Bat Temps", str(response.value))
 def new_ENG2(response):
+    """Print responce."""
     #log.write(str(response.value))
     print("Engine Properties", str(response.value))
 
 #connection = obd.OBD() # auto-connects to USB or RF port
 #connection = obd.Async(portstr=("/dev/rfcomm0"), baudrate=(38400), protocol=(6)) # create an asynchronous connection
 #start connection
-connection = obd.Async()
+#connection = obd.Async()
+PORT='\.\COM4'
+# BAUD = '38400'
+BAUD = '9600'
+PROTOCOL = '6'
+connection = obd.Async(portstr=(PORT),baudrate=(BAUD),protocol=(PROTOCOL), fast=True)
 
 #remove the unsupported messages, such as "WARNING:obd.obd:'b'2181': Module Voltages' is not supported"
 connection.supported_commands.add(ceng1)
@@ -322,14 +346,14 @@ connection.supported_commands.add(ceng2)
 # list of PIDs to keep refreshing
 connection.watch(ceng1, callback=new_ENG1)
 connection.watch(cbv, callback=new_BV)
-#connection.watch(cbv2, callback=new_B2V) The translation function does not seem to be working for this one at the moment
+#connection.watch(cbv2, callback=new_B2V)
 connection.watch(cmv, callback=new_MV)
 connection.watch(cmesr, callback=new_MESR)
 connection.watch(cbtemp, callback=new_MTMP)
 connection.watch(ceng2, callback=new_ENG2)
 #start loop
 connection.start()
-time.sleep(2000) # keep looping for this many seconds. Do other work in the main thread
+time.sleep(6) # keep looping for this many seconds. Do other work in the main thread
 connection.stop()
 #sys.stdout.close()
 csvfile.close()
@@ -339,6 +363,7 @@ $5C is the standard PID.
 $7E0 is the non standard PID.
 AT SH 7E0 - sets the header to $7E0
 2101 - requests mode $21 PID $01
+add new headers like this: ECU_HEADER.PCH7C0=b'7C0'
 
 Should get a response with 7E8 and /X/ bytes of data behind it, 
 which you should then be able to decode.
@@ -360,4 +385,3 @@ Unit type: C
 Equation: AC-40 (no space between A and C; "AC" is the location within the response)
 OBD Header: 7E0 (Auto also works, but seems to take longer)
 """
-
