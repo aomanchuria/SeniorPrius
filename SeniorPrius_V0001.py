@@ -47,7 +47,7 @@ writcsv.writerow(['RPM',
 #ECU = 2 UNKNOWN
 
 #logging
-#obd.logger.setLevel(obd.logging.DEBUG)
+obd.logger.setLevel(obd.logging.DEBUG)
 #logging.basicConfig(filename='example.log', encoding='utf-8', level=logging.DEBUG)
 
 #silence logging
@@ -58,8 +58,8 @@ writcsv.writerow(['RPM',
 #########
 #define headers found in Prius C
 ECU_HEADER.MY=b'7E2'
-ECU_HEADER.PCH7=b'7'
-ECU_HEADER.PCH700=b'700'
+ECU_HEADER.PCH7=b'7E2'
+ECU_HEADER.PCH700=b'7E2'
 ECU_HEADER.PCH7B0=b'7B0'
 ECU_HEADER.PCH7C0=b'7C0'
 ECU_HEADER.PCH7C4=b'7C4'
@@ -184,8 +184,8 @@ def modTmp(messages):
     print (f'Module 1 temp{bt2}')
     print (f'Module 2 temp{bt3}')
     print (f'Module 3 temp{bt4}')
-    writcsv.writerow(arr) #write to CSV after all row data has been collected
-    arr=[] #clear CSV array to start next row
+    #writcsv.writerow(arr) #write to CSV after all row data has been collected
+    #arr=[] #clear CSV array to start next row
     return bt1, bt2, bt3, bt4
 
 def eng2(message):
@@ -250,12 +250,12 @@ cbv = OBDCommand("BV",         # name
                  bvolt,            # decoding function
                  ECU.ALL,     # (optional) ECU filter
                  True,             # (optional) enable optimizations
-                 header=ECU_HEADER.PCH7)             
+                 header=ECU_HEADER.PCH7C0)             
 
 cbv2 = OBDCommand("BV2",         # name
                  "12V Battery voltage",   # description
                  b"0142",        # command
-                 2,              # number of return bytes
+                 4,              # number of return bytes
                  b2volt,            # decoding function
                  ECU.ALL,     # (optional) ECU filter
                  True)             # (optional) enable optimizations
@@ -286,7 +286,7 @@ cbtemp = OBDCommand("MTMP",         # name
 
 ceng2 = OBDCommand("ENG2",         # name
                  "Engine Query set 2",   # description
-                 b"2103",        # command
+                 b"2101",        # command
                  24,              # number of return bytes
                  eng2,            # decoding function
                  True,           # (optional) enable optimizations
@@ -325,12 +325,12 @@ def new_ENG2(response):
 #connection = obd.OBD() # auto-connects to USB or RF port
 #connection = obd.Async(portstr=("/dev/rfcomm0"), baudrate=(38400), protocol=(6)) # create an asynchronous connection
 #start connection
-#connection = obd.Async()
-PORT='\.\COM4'
+connection = obd.Async()
+#PORT='\.\COM4'
 # BAUD = '38400'
-BAUD = '9600'
-PROTOCOL = '6'
-connection = obd.Async(portstr=(PORT),baudrate=(BAUD),protocol=(PROTOCOL), fast=True)
+#BAUD = '9600'
+#PROTOCOL = '6'
+#connection = obd.Async(portstr=(PORT),baudrate=(BAUD),protocol=(PROTOCOL), fast=True)
 
 #remove the unsupported messages, such as "WARNING:obd.obd:'b'2181': Module Voltages' is not supported"
 connection.supported_commands.add(ceng1)
@@ -346,14 +346,14 @@ connection.supported_commands.add(ceng2)
 # list of PIDs to keep refreshing
 connection.watch(ceng1, callback=new_ENG1)
 connection.watch(cbv, callback=new_BV)
-#connection.watch(cbv2, callback=new_B2V)
+connection.watch(cbv2, callback=new_B2V)
 connection.watch(cmv, callback=new_MV)
 connection.watch(cmesr, callback=new_MESR)
 connection.watch(cbtemp, callback=new_MTMP)
 connection.watch(ceng2, callback=new_ENG2)
 #start loop
 connection.start()
-time.sleep(6) # keep looping for this many seconds. Do other work in the main thread
+time.sleep(3600) # keep looping for this many seconds. Do other work in the main thread
 connection.stop()
 #sys.stdout.close()
 csvfile.close()
@@ -363,7 +363,6 @@ $5C is the standard PID.
 $7E0 is the non standard PID.
 AT SH 7E0 - sets the header to $7E0
 2101 - requests mode $21 PID $01
-add new headers like this: ECU_HEADER.PCH7C0=b'7C0'
 
 Should get a response with 7E8 and /X/ bytes of data behind it, 
 which you should then be able to decode.
