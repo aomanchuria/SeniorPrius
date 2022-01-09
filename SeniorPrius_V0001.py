@@ -80,7 +80,7 @@ def bvolt(messages):
     global arr
     bv = messages[0].data
     print(bv)
-    voltage = (bv[0]/10) 
+    voltage = (bv[2]/10) 
     arr.append(voltage)
     print (f'12v Battery voltage{voltage}')
     return voltage # construct a Pint Quantity
