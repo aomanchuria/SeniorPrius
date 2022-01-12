@@ -1,5 +1,10 @@
 # SeniorPrius
-A script to log prius data from OBD port. Tested using a Bluetooth dongle in a Prius C 2014. Notice that this prius only has 10 modules. So you will have to develop something for the larger prii. But this can help you tremendously.
+<img width="1163" alt="Screenshot 2022-01-11 204719" src="https://user-images.githubusercontent.com/27635849/149065815-a9a06107-24f4-4e81-a496-441b22dc7c8e.png">
+
+A script to log prius data from OBD port. The image above is from libre office from the CSV file. Tested using a Bluetooth dongle in a Prius C 2014. Notice that this prius only has 10 modules. So you will have to develop something for the larger prii. But this can help you tremendously.
+
+<img width="578" alt="Screenshot 2022-01-11 205304" src="https://user-images.githubusercontent.com/27635849/149066037-7590532b-7f06-4690-b595-84ce591fb2a3.png">
+This image is work in progress. A Dash Plotly server will be showing the data live as it is generated. Plotly allows one to easily navigate the data by zooming in and out as desired from the website. The site would be local, being served by the raspberry pi data logger.
 
 First of all, here are the real heros behind this effort, on who's shoulders I am standing, without knowing anyone there:
 
