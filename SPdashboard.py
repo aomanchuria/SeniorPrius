@@ -35,7 +35,8 @@ app = dash.Dash(__name__)
 # see https://plotly.com/python/px-arguments/ for more options
 df = pd.read_csv('log.csv')
 #df = pd.read_csv('log.csv', header=None, error_bad_lines=False)
-df3 = pd.DataFrame(df.iloc[1:5,3:13])
+headers = pd.DataFrame(df.iloc[0,3:13])
+headers.columns = [ 'Voltage']
 
 
 
@@ -67,6 +68,10 @@ fig.update_layout(
                 yaxis=dict(title='Voltage')
                 )
 
+fig2 = px.bar(headers, y=['Voltage'])
+
+fig2.update_layout(yaxis_range=[10,16])
+
 
 
 app.layout = html.Div(children=[
@@ -86,143 +91,28 @@ app.layout = html.Div(children=[
         min=0,
         max=850,
         step=1,
-        value=0,
+        value=10,
         tooltip={"placement": "bottom", "always_visible": True},
         updatemode='drag'
     ),
     
 
-    html.Table([ html.Tr([   html.Td([daq.Tank(
-        id='m1v',
-        height=200,
-        width=50,
-        value=16,
-        showCurrentValue=False,
-        units='volts',
-        min=10,
-        max=16,
-        label="m1v",
-        labelPosition='bottom',
-        style={'margin-left': '15px'},
-        className='dark-theme-control'
-    ),]), html.Td([daq.Tank(
-        id='m2v',
-        height=200,
-        width=50,
-        value=16,
-        showCurrentValue=False,
-        units='volts',
-        min=10,
-        max=16,
-        label="m2v",
-        labelPosition='bottom',
-        style={'margin-left': '15px'},
-        className='dark-theme-control'
-    ),]), html.Td([daq.Tank(
-        id='m3v',
-        height=200,
-        width=50,
-        value=16,
-        showCurrentValue=False,
-        units='volts',
-        min=10,
-        max=16,
-        label="m3v",
-        labelPosition='bottom',
-        style={'margin-left': '15px'},
-        className='dark-theme-control'
-    ),]), html.Td([daq.Tank(
-        id='m4v',
-        height=200,
-        width=50,
-        value=16,
-        showCurrentValue=False,
-        units='volts',
-        min=10,
-        max=16,
-        label="m4v",
-        labelPosition='bottom',
-        style={'margin-left': '15px'},
-        className='dark-theme-control'
-    ),]), html.Td([daq.Tank(
-        id='m5v',
-        height=200,
-        width=50,
-        value=16,
-        showCurrentValue=False,
-        units='volts',
-        min=10,
-        max=16,
-        label="m5v",
-        labelPosition='bottom',
-        style={'margin-left': '15px'},
-        className='dark-theme-control'
-    ),]), html.Td([daq.Tank(
-        id='m6v',
-        height=200,
-        width=50,
-        value=16,
-        showCurrentValue=False,
-        units='volts',
-        min=10,
-        max=16,
-        label="m6v",
-        labelPosition='bottom',
-        style={'margin-left': '15px'},
-        className='dark-theme-control'
-    ),]), html.Td([daq.Tank(
-        id='m7v',
-        height=200,
-        width=50,
-        value=16,
-        showCurrentValue=False,
-        units='volts',
-        min=10,
-        max=16,
-        label="m7v",
-        labelPosition='bottom',
-        style={'margin-left': '15px'},
-        className='dark-theme-control'
-    ),]), html.Td([daq.Tank(
-        id='m8v',
-        height=200,
-        width=50,
-        value=16,
-        showCurrentValue=False,
-        units='volts',
-        min=10,
-        max=16,
-        label="m8v",
-        labelPosition='bottom',
-        style={'margin-left': '15px'},
-        className='dark-theme-control'
-    ),]), html.Td([daq.Tank(
-        id='m9v',
-        height=200,
-        width=50,
-        value=16,
-        showCurrentValue=False,
-        units='volts',
-        min=10,
-        max=16,
-        label="m9v",
-        labelPosition='bottom',
-        style={'margin-left': '15px'},
-        className='dark-theme-control'
-    ),]), html.Td([daq.Tank(
-        id='m10v',
-        height=200,
-        width=50,
-        value=16,
-        showCurrentValue=False,
-        units='volts',
-        min=10,
-        max=16,
-        label="m10v",
-        labelPosition='bottom',
-        style={'margin-left': '15px'},
-        className='dark-theme-control'
-    ),]),
+    html.Table([ html.Tr([   html.Td([dcc.Graph(
+        id='batts',
+        figure=fig2,
+        #height=200,
+        #width=50,
+        #value=16,
+        #showCurrentValue=False,
+        #units='volts',
+        #min=10,
+        #max=16,
+        #label="m1v",
+        #labelPosition='bottom',
+        #style={'margin-left': '15px'},
+        #className='dark-theme-control'
+    ),]), 
+        
         
         
         ]),]),
@@ -230,24 +120,20 @@ app.layout = html.Div(children=[
     
     ])
              
-@app.callback([dash.dependencies.Output('m1v', 'value')],
-               [dash.dependencies.Output('m2v', 'value')],
-                [dash.dependencies.Output('m3v', 'value')],
-                 [dash.dependencies.Output('m4v', 'value')],
-                  [dash.dependencies.Output('m5v', 'value')],
-                   [dash.dependencies.Output('m6v', 'value')],
-                    [dash.dependencies.Output('m7v', 'value')],
-                     [dash.dependencies.Output('m8v', 'value')],
-                      [dash.dependencies.Output('m9v', 'value')],
-                       [dash.dependencies.Output('m10v', 'value')],
+@app.callback(dash.dependencies.Output('batts', 'figure'),
     [dash.dependencies.Input('my-slider', 'value')])
 def update_output(value):
-    (m1v, m2v, m3v, m4v, m5v, m6v, m7v, m8v, m9v, m10v)=df.iloc[value,3:13]
+    #batts=df.iloc[value,3:13]
+    df3 = pd.DataFrame(df.iloc[value,3:13])
+    df3.columns = ['Voltage']
+    scale = px.colors.sequential.Jet
+    batbar = px.bar(df3, y='Voltage', color='Voltage', color_continuous_scale=scale) # color_discrete_sequence=["red"])
+    batbar.update_layout(yaxis_range=[10,16],) # marker=dict( colorscale=scale))
     #return 'Time shown {}seconds, ({:.2f} minutes)'.format(value, To_minutes(value))
-    return m1v, m2v, m3v, m4v, m5v, m6v, m7v, m8v, m9v, m10v
+    return batbar
 
 if __name__ == '__main__':
-    app.run_server(debug=True, host = "127.0.0.1") #app.run_server(debug = True,host = ‘0.0.0.0’).
+    app.run_server(debug=True, host = "192.168.1.130") #app.run_server(debug = True,host = ‘0.0.0.0’).
     
   
 
