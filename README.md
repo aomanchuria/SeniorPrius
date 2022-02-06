@@ -52,10 +52,25 @@ instead I bind the bluetooth directly from linux:
 https://forums.raspberrypi.com/viewtopic.php?t=125922
 
 ```
-sudo rfcomm bind hci0 XX:XX:XX:XX:XX:XX 1
+sudo rfcomm bind 0 XX:XX:XX:XX:XX:XX 1
 Now /dev/rfcomm0 is created and just waits there for our python script to use
 ```
 ```python
+
+To do this automatically at booot add these lines to RC local
+```
+pi@raspberrypi:~ $ sudo nano /etc/rc.local
+
+#connect to OBDII adapter for SeniorPrius App
+#bind the address to device rfcomm 0 channel 1
+rfcomm bind 0 XX:XX:XX:XX:XX:XX 1
+
+then Ctrl o and Ctrl x to save and exit
+
+```
+```python
+
+
 #either like this for a single command connection
 connection = obd.OBD() # auto-connects to USB or RF port
 #like this for an automatically updating connection with defining actually what device to use, baud rate etc (this did not work for me)
