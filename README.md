@@ -80,6 +80,61 @@ Agent registered
 [bluetooth]#trust XX:XX:XX:XX:XX:XX
 [bluetooth]#exit
 ```
+
+Another way to setup the auto start is how I actually did it in my latest version using two services:
+
+```python
+sudo nano /lib/systemd/system/rfcomm.service
+
+[Unit]
+Description= This binds rfcomm0 to channel 1 for SeniorPrius App
+After=bluetooth.service
+
+[Service]
+Type=simple
+ExecStart=rfcomm bind 0 00:1D:A5:20:17:8D 1
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+
+
+sudo nano /lib/systemd/system/SeniorPrius.service
+
+ [Unit]
+ Description=SeniorPrius App
+ After=rfcomm.service
+
+ [Service]
+ Type=idle
+ WorkingDirectory=/home/obd
+ ExecStart=/usr/bin/python3 /home/obd/SeniorPrius_V0001.py > /home/obd/SeniorPrius.log 2>&1
+ Restart=on-failure
+
+ [Install]
+ WantedBy=multi-user.target
+```
+After creating the services you should enable them and start them or just reboot after enabling.
+```python
+systemctl enable rfcomm.service
+systemctl enable SeniorPrius.service
+
+Also dont forget to make the app executable and assign 664 to the service ( its in my notes, I forget why)
+
+chmod +x SeniorPrius_V0001.py
+sudo chmod 644 /lib/systemd/system/SeniorPrius.service
+sudo systemctl daemon-reload
+
+systemctl start rfcomm.service
+systemctl start SeniorPrius.service
+
+Notice that the service will run and keep restarting regardless of what may be going on outside
+so if you bring the pi home, you should stop it
+
+systemctl stop SeniorPrius.service
+
+```
+
 Okay after this, every time you boot, the pi will find your bluetooth address and bind it to the serial port.
 
 on with the python stuff...
