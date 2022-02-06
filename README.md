@@ -50,6 +50,7 @@ os.system("sudo rfcomm connect hci0 AA:BB:CC:11:22:33 1 &")	# connect using OBD2
 ```
 instead I bind the bluetooth directly from linux:
 https://forums.raspberrypi.com/viewtopic.php?t=125922
+https://fsjohnny.medium.com/connecting-your-bluetooth-obdii-adapter-or-other-serial-port-adapters-to-a-raspberry-pi-3-f2c9663dae73
 
 ```python
 sudo rfcomm bind 0 XX:XX:XX:XX:XX:XX 1
