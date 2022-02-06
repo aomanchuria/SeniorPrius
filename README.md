@@ -67,6 +67,21 @@ rfcomm bind 0 XX:XX:XX:XX:XX:XX 1
 ```
 then Ctrl o and Ctrl x to save and exit
 
+a little out of order, but you need to find and trust the OBD device. This is done once.
+
+```python
+pi@raspberrypi:~ $ bluetoothctl
+Agent registered
+[bluetooth]#Agent on
+[bluetooth]#Scan on
+[bluetooth]#Scan off  ##after you found your device address
+[bluetooth]#pair XX:XX:XX:XX:XX:XX ###replace with your own device address ofcourse
+[bluetooth]#trust XX:XX:XX:XX:XX:XX
+[bluetooth]#exit
+```
+Okay after this, every time you boot, the pi will find your bluetooth address and bind it to the serial port.
+
+on with the python stuff...
 
 ```python
 #either like this for a single command connection
