@@ -25,14 +25,14 @@ arr=[]
 csvfile = open('log.csv', 'a', newline='')
 writcsv = csv.writer(csvfile, delimiter=',',
                         quotechar='|', quoting=csv.QUOTE_MINIMAL)
-writcsv.writerow(['RPM', 
-                  'B+', 'B2+', 
-                  'm1v', 'm2v', 'm3v', 'm4v', 'm5v', 'm6v', 'm7v', 'm8v', 'm9v', 'm10v',
-                  'm1r', 'm2r', 'm3r', 'm4r', 'm5r', 'm6r', 'm7r', 'm8r', 'm9r', 'm10r',
-                  'bt1', 'bt2', 'bt3','bt4',
-                  'eng2Load', 'eng2Map', 'eng2Iat', 'eng2At', 'eng2Ap', 'eng2cTmp', 'eng2rpm', 'eng2vsp', 'eng2ert', 'eng2tp', 'eng2ap1', 'eng2ap2', 'eng2dtcw', 'eng2dtcd', 'eng2dtct', 'eng2bp', 'eng2soc'])
+#writcsv.writerow(['RPM', 
+#                  'B+', 'B2+', 
+#                  'm1v', 'm2v', 'm3v', 'm4v', 'm5v', 'm6v', 'm7v', 'm8v', 'm9v', 'm10v',
+#                  'm1r', 'm2r', 'm3r', 'm4r', 'm5r', 'm6r', 'm7r', 'm8r', 'm9r', 'm10r',
+#                  'bt1', 'bt2', 'bt3','bt4',
+#                  'eng2Load', 'eng2Map', 'eng2Iat', 'eng2At', 'eng2Ap', 'eng2cTmp', 'eng2rpm', 'eng2vsp', 'eng2ert', 'eng2tp', 'eng2ap1', 'eng2ap2', 'eng2dtcw', 'eng2dtcd', 'eng2dtct', 'eng2bp', 'eng2soc'])
 
-
+#sudo rfcomm bind /dev/rfcomm0 hci0 00:1D:A5:20:17:AD 1
 #os.system('sudo rfcomm connect hci0 00:1D:A5:20:17:AD 1')
 #os.system("sudo sdptool add SP")				# set up serial port using linux's sdptool
 #time.sleep(5)							# sdptool returns before port fully set up? so wait a jiff
@@ -119,16 +119,16 @@ def modvolt(messages):
     arr.append(v8)
     arr.append(v9)
     arr.append(v10)
-    print (f'Module 1 voltage{v1}')
-    print (f'Module 2 voltage{v2}')
-    print (f'Module 3 voltage{v3}')
-    print (f'Module 4 voltage{v4}')
-    print (f'Module 5 voltage{v5}')
-    print (f'Module 6 voltage{v6}')
-    print (f'Module 7 voltage{v7}')
-    print (f'Module 8 voltage{v8}')
-    print (f'Module 9 voltage{v9}')
-    print (f'Module 10 voltage{v10}')
+    #print (f'Module 1 voltage{v1}')
+    #print (f'Module 2 voltage{v2}')
+    #print (f'Module 3 voltage{v3}')
+    #print (f'Module 4 voltage{v4}')
+    #print (f'Module 5 voltage{v5}')
+    #print (f'Module 6 voltage{v6}')
+    #print (f'Module 7 voltage{v7}')
+    #print (f'Module 8 voltage{v8}')
+    #print (f'Module 9 voltage{v9}')
+    #print (f'Module 10 voltage{v10}')
     return v1, v2, v3, v4, v5, v6, v7, v8, v9, v10 
 
 def modEsr(messages):
@@ -155,16 +155,16 @@ def modEsr(messages):
     arr.append(c8)
     arr.append(c9)
     arr.append(c10)
-    print (f'Module 1 resistance{c1}')
-    print (f'Module 2 resistance{c2}')
-    print (f'Module 3 resistance{c3}')
-    print (f'Module 4 resistance{c4}')
-    print (f'Module 5 resistance{c5}')
-    print (f'Module 6 resistance{c6}')
-    print (f'Module 7 resistance{c7}')
-    print (f'Module 8 resistance{c8}')
-    print (f'Module 9 resistance{c9}')
-    print (f'Module 10 resistance{c10}')
+    # print (f'Module 1 resistance{c1}')
+    # print (f'Module 2 resistance{c2}')
+    # print (f'Module 3 resistance{c3}')
+    # print (f'Module 4 resistance{c4}')
+    # print (f'Module 5 resistance{c5}')
+    # print (f'Module 6 resistance{c6}')
+    # print (f'Module 7 resistance{c7}')
+    # print (f'Module 8 resistance{c8}')
+    # print (f'Module 9 resistance{c9}')
+    # print (f'Module 10 resistance{c10}')
     return c1, c2, c3, c4, c5, c6, c7, c8, c9, c10 
 
 def modTmp(messages):
@@ -180,12 +180,10 @@ def modTmp(messages):
     arr.append(bt2)
     arr.append(bt3)
     arr.append(bt4)
-    print (f'Battery Intake Temp {bt1}')
-    print (f'Module 1 temp{bt2}')
-    print (f'Module 2 temp{bt3}')
-    print (f'Module 3 temp{bt4}')
-    #writcsv.writerow(arr) #write to CSV after all row data has been collected
-    #arr=[] #clear CSV array to start next row
+    # print (f'Battery Intake Temp {bt1}')
+    # print (f'Module 1 temp{bt2}')
+    # print (f'Module 2 temp{bt3}')
+    # print (f'Module 3 temp{bt4}')
     return bt1, bt2, bt3, bt4
 
 def eng2(message):
@@ -194,23 +192,23 @@ def eng2(message):
     global arr
     msg2 = message[0].data
     print(msg2)
-    load = ((msg2[2]*20)/51)
-    Map = msg2[3]
-    Iat = msg2[4]-40
-    At = msg2[5]-40
-    Ap = msg2[6]
-    cTmp = msg2[7]-40
-    rpm = ((msg2[8]*256+msg2[9])/4) 
-    vsp = msg2[10]
-    ert = msg2[11]*256+msg2[12]
-    tp = msg2[13]*20/51
-    ap1 = msg2[14]*20/51
-    ap2 = msg2[15]*20/51
-    dtcw = msg2[16]
-    dtcd = msg2[17]*256+msg2[17]
-    dtct = msg2[18]*256+msg2[19]
-    bp = ((msg2[20]*256+msg2[21])/1000)
-    soc = msg2[22]*20/51
+    load = ((msg2[2]*20)/51) #engine load
+    Map = msg2[3] #manifold air pressure
+    Iat = msg2[4]-40 #intake air temperature
+    At = msg2[5]-40 #ambient temperature
+    Ap = msg2[6] #atmospher pressure
+    cTmp = msg2[7]-40 #cooland temperature
+    rpm = ((msg2[8]*256+msg2[9])/4) #engine speed
+    vsp = msg2[10]#vehicle speed
+    ert = msg2[11]*256+msg2[12] #engine run time
+    tp = msg2[13]*20/51 #throttle position
+    ap1 = msg2[14]*20/51 #accelerator pedal position 1
+    ap2 = msg2[15]*20/51 #accelerator pedal position 2
+    dtcw = msg2[16]  #DTC clear warm up
+    dtcd = msg2[17]*256+msg2[17] #DTC clear run distance
+    dtct = msg2[18]*256+msg2[19] #DTC clear Min
+    bp = ((msg2[20]*256+msg2[21])/1000) #battery voltage
+    soc = msg2[22]*20/51 #state of charge.
     arr.append(load)
     arr.append(Map)
     arr.append(Iat)
@@ -230,8 +228,9 @@ def eng2(message):
     arr.append(soc)
     writcsv.writerow(arr) #write to CSV after all row data has been collected
     arr=[] #clear CSV array to start next row
-    print (f'Engine calculated load {load}')
-    print (f'Engine RPM{rpm}')
+    time.sleep(2)	
+    # print (f'Engine calculated load {load}')
+    # print (f'Engine RPM{rpm}')
     return load # construct a Pint Quantity
 
 #cmd = obd.commands.RPM # select an OBD command (sensor)
@@ -295,31 +294,24 @@ ceng2 = OBDCommand("ENG2",         # name
 # will continuously print new values for each command requested
 def new_ENG1(response):
     """Print responce."""
-    #log.write(str(response.value))
     print("RPM", str(response.value))
 def new_BV(response):
     """Print responce."""
-    #log.write(str(response.value))
     print("12v Bat V", str(response.value))
 def new_B2V(response):
     """Print responce."""
-    #log.write(str(response.value))
     print("12v Bat V2", str(response.value))
 def new_MV(response):
     """Print responce."""
-    #log.write(str(response.value))
     print("Drive Bat Vs", str(response.value))
 def new_MESR(response):
     """Print responce."""
-    #log.write(str(response.value))
     print("Drive Bat ESRs", str(response.value))
 def new_MTMP(response):
     """Print responce."""
-    #log.write(str(response.value))
     print("Drive Bat Temps", str(response.value))
 def new_ENG2(response):
     """Print responce."""
-    #log.write(str(response.value))
     print("Engine Properties", str(response.value))
 
 #connection = obd.OBD() # auto-connects to USB or RF port
@@ -357,30 +349,3 @@ time.sleep(3600) # keep looping for this many seconds. Do other work in the main
 connection.stop()
 #sys.stdout.close()
 csvfile.close()
-
-"""
-$5C is the standard PID.
-$7E0 is the non standard PID.
-AT SH 7E0 - sets the header to $7E0
-2101 - requests mode $21 PID $01
-
-Should get a response with 7E8 and /X/ bytes of data behind it, 
-which you should then be able to decode.
-01F 0: 61 01 00 00 00 00 1: 55 66 54 45 5 5A 00 2: 00 00 00 00 0C 29 53 3: 21 21 00 3D 05 AD 09 4: 42 30 04 58 00 00 00 SEARCHI
-01F
-0: 61 01 00 00 00 00
-1: 55 66 54 45 5 5A 00
-2: 00 00 00 00 0C 29 53
-3: 21 21 00 3D 05 AD 09
-4: 42 30 04 58 00 00 00 
-SEARCHI
-01F = 31, which means to expect a 31 byte response
-AT SP0 set the header back to auto/search???
-OBD2 Mode and PID: 2101
-Minimum Value: -40
-Maximum Value: 215 (this is just the maximum that this location can support, which does not mean the sensor can read that high)
-Scale factor: x1
-Unit type: C
-Equation: AC-40 (no space between A and C; "AC" is the location within the response)
-OBD Header: 7E0 (Auto also works, but seems to take longer)
-"""
