@@ -50,8 +50,8 @@ dat = np.concatenate((arr_ENG1, arr_BV, arr_B2V, arr_MV, arr_MESR, arr_MTMP, arr
 writcsv.writerow(dat) #write to CSV after all row data has been collected
 
 
-#sudo rfcomm bind /dev/rfcomm0 hci0 00:1D:A5:20:17:AD 1
-#os.system('sudo rfcomm connect hci0 00:1D:A5:20:17:AD 1')
+#sudo rfcomm bind /dev/rfcomm0 hci0 AA:BB:CC:11:22:33 1
+#os.system('sudo rfcomm connect hci0 AA:BB:CC:11:22:33 1')
 #os.system("sudo sdptool add SP")				# set up serial port using linux's sdptool
 #time.sleep(5)							# sdptool returns before port fully set up? so wait a jiff
 #os.system("sudo rfcomm connect hci0 AA:BB:CC:11:22:33 1 &")	# connect using OBD2 unit's mac address. rfcomm locks, so detach(using "&")
